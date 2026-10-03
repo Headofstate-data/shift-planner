@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="12-hour shift planner and pay calculator">
+  <title>12-Hour Shift Planner</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main class="container">
+    <header class="hero">
+      <div>
+        <p class="eyebrow">SHIFT PLANNER</p>
+        <h1>12-Hour Shift Planner</h1>
+        <p class="subtitle">Select the days you are working and instantly see your hours and estimated pay.</p>
+      </div>
+      <button id="resetBtn" class="secondary-btn" type="button">Reset</button>
+    </header>
+
+    <section class="card">
+      <h2>Your working days</h2>
+      <p class="muted">Each selected day counts as one 12-hour shift.</p>
+
+      <div class="days-grid" id="daysGrid"></div>
+
+      <div class="summary-grid">
+        <div class="stat">
+          <span>Shifts</span>
+          <strong id="shiftCount">0</strong>
+        </div>
+        <div class="stat">
+          <span>Total hours</span>
+          <strong id="totalHours">0</strong>
+        </div>
+        <div class="stat">
+          <span>Hourly rate</span>
+          <div class="input-prefix">
+            <span>£</span>
+            <input id="hourlyRate" type="number" min="0" step="0.01" value="14" inputmode="decimal" aria-label="Hourly rate">
+          </div>
+        </div>
+        <div class="stat highlight">
+          <span>Estimated gross pay</span>
+          <strong id="grossPay">£0.00</strong>
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="section-heading">
+        <div>
+          <h2>Pay estimate</h2>
+          <p class="muted">These figures are estimates based on your selected shifts.</p>
+        </div>
+      </div>
+
+      <div class="pay-table">
+        <div><span>Weekly</span><strong id="weeklyPay">£0.00</strong></div>
+        <div><span>4-week estimate</span><strong id="fourWeekPay">£0.00</strong></div>
+        <div><span>Average monthly estimate</span><strong id="monthlyPay">£0.00</strong></div>
+        <div><span>Annual estimate</span><strong id="annualPay">£0.00</strong></div>
+      </div>
+      <p class="note">Gross estimates only. Tax, National Insurance, pension contributions, holiday pay and other deductions are not included.</p>
+    </section>
+
+    <section class="card">
+      <h2>Shift breakdown</h2>
+      <div id="breakdown" class="breakdown empty">No working days selected.</div>
+    </section>
+
+    <footer>
+      <p>12-Hour Shift Planner · Runs entirely in your browser · No data is uploaded.</p>
+    </footer>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>
