@@ -1,129 +1,22 @@
-const DAYS = [
-  "Monday",
-  "Tuesday",
-  "Wednesday",
-  "Thursday",
-  "Friday",
-  "Saturday",
-  "Sunday"
-];
+const DAYS=["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"];
+const SHIFTS=[{id:"day",name:"Day Shift",time:"07:00 – 19:00"},{id:"night",name:"Night Shift",time:"19:00 – 07:00"}];
+const KEY="shiftPlannerSettings";
+const daysList=document.getElementById("daysList"),rate=document.getElementById("hourlyRate");
+const shiftCount=document.getElementById("shiftCount"),hoursEl=document.getElementById("totalHours"),gross=document.getElementById("grossPay");
+const weekly=document.getElementById("weeklyPay"),fourWeek=document.getElementById("fourWeekPay"),monthly=document.getElementById("monthlyPay"),annual=document.getElementById("annualPay"),breakdown=document.getElementById("breakdown");
 
-const SHIFT_HOURS = 12;
-const STORAGE_KEY = "shiftPlannerSettings";
-
-const daysGrid = document.getElementById("daysGrid");
-const hourlyRateInput = document.getElementById("hourlyRate");
-const shiftCountEl = document.getElementById("shiftCount");
-const totalHoursEl = document.getElementById("totalHours");
-const grossPayEl = document.getElementById("grossPay");
-const weeklyPayEl = document.getElementById("weeklyPay");
-const fourWeekPayEl = document.getElementById("fourWeekPay");
-const monthlyPayEl = document.getElementById("monthlyPay");
-const annualPayEl = document.getElementById("annualPay");
-const breakdownEl = document.getElementById("breakdown");
-const resetBtn = document.getElementById("resetBtn");
-
-function formatMoney(value) {
-  return new Intl.NumberFormat("en-GB", {
-    style: "currency",
-    currency: "GBP"
-  }).format(value);
+function money(n){return new Intl.NumberFormat("en-GB",{style:"currency",currency:"GBP"}).format(n)}
+function build(){
+ daysList.innerHTML=DAYS.map((day,i)=>`<div class="day-row"><div class="day-name">${day}</div>${SHIFTS.map(s=>`<div class="shift-option"><input type="checkbox" id="${s.id}-${i}" data-day="${day}" data-shift="${s.id}"><label for="${s.id}-${i}"><span class="shift-title">${s.name}</span><span class="shift-time">${s.time}</span></label></div>`).join("")}</div>`).join("");
+ daysList.querySelectorAll("input").forEach(x=>x.addEventListener("change",update));
 }
-
-function createDayControls() {
-  daysGrid.innerHTML = DAYS.map((day, index) => `
-    <div class="day">
-      <input type="checkbox" id="day-${index}" data-day="${day}">
-      <label for="day-${index}">
-        <span class="day-name">${day}</span>
-        <span class="day-hours">${SHIFT_HOURS} hours</span>
-      </label>
-    </div>
-  `).join("");
-
-  daysGrid.querySelectorAll("input").forEach(input => {
-    input.addEventListener("change", update);
-  });
+function selected(){return [...daysList.querySelectorAll("input:checked")].map(x=>{const s=SHIFTS.find(y=>y.id===x.dataset.shift);return{day:x.dataset.day,...s,hours:12}})}
+function save(){localStorage.setItem(KEY,JSON.stringify({shifts:selected().map(x=>({day:x.day,shift:x.id})),rate:rate.value}))}
+function load(){try{const s=JSON.parse(localStorage.getItem(KEY));if(!s)return;daysList.querySelectorAll("input").forEach(x=>x.checked=Array.isArray(s.shifts)&&s.shifts.some(y=>y.day===x.dataset.day&&y.shift===x.dataset.shift));if(s.rate!==undefined)rate.value=s.rate}catch(e){}}
+function update(){
+ const list=selected(), count=list.length, hours=count*12, r=Math.max(0,Number(rate.value)||0), pay=hours*r;
+ shiftCount.textContent=count;hoursEl.textContent=hours;gross.textContent=money(pay);weekly.textContent=money(pay);fourWeek.textContent=money(pay*4);monthly.textContent=money(pay*52/12);annual.textContent=money(pay*52);
+ if(!list.length){breakdown.className="breakdown empty";breakdown.textContent="No shifts selected."}else{breakdown.className="breakdown";breakdown.innerHTML=list.map(x=>`<div class="breakdown-row"><span>${x.day}</span><span class="shift-badge">${x.name}</span><strong>${x.time} · 12 hours</strong></div>`).join("")}
+ save();
 }
-
-function getSelectedDays() {
-  return [...daysGrid.querySelectorAll("input:checked")].map(input => input.dataset.day);
-}
-
-function updateBreakdown(selectedDays) {
-  if (selectedDays.length === 0) {
-    breakdownEl.className = "breakdown empty";
-    breakdownEl.textContent = "No working days selected.";
-    return;
-  }
-
-  breakdownEl.className = "breakdown";
-  breakdownEl.innerHTML = selectedDays.map((day, index) => `
-    <div class="breakdown-row">
-      <span>${day}</span>
-      <span class="shift-badge">Shift ${index + 1}</span>
-      <strong>${SHIFT_HOURS} hours</strong>
-    </div>
-  `).join("");
-}
-
-function saveState() {
-  const state = {
-    days: getSelectedDays(),
-    hourlyRate: hourlyRateInput.value
-  };
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-}
-
-function loadState() {
-  try {
-    const saved = JSON.parse(localStorage.getItem(STORAGE_KEY));
-    if (!saved) return;
-
-    if (Array.isArray(saved.days)) {
-      daysGrid.querySelectorAll("input").forEach(input => {
-        input.checked = saved.days.includes(input.dataset.day);
-      });
-    }
-
-    if (saved.hourlyRate !== undefined && saved.hourlyRate !== "") {
-      hourlyRateInput.value = saved.hourlyRate;
-    }
-  } catch {
-    // Ignore invalid local storage data.
-  }
-}
-
-function update() {
-  const selectedDays = getSelectedDays();
-  const shiftCount = selectedDays.length;
-  const totalHours = shiftCount * SHIFT_HOURS;
-  const hourlyRate = Math.max(0, Number(hourlyRateInput.value) || 0);
-  const weeklyPay = totalHours * hourlyRate;
-
-  shiftCountEl.textContent = shiftCount;
-  totalHoursEl.textContent = totalHours;
-  grossPayEl.textContent = formatMoney(weeklyPay);
-  weeklyPayEl.textContent = formatMoney(weeklyPay);
-  fourWeekPayEl.textContent = formatMoney(weeklyPay * 4);
-  monthlyPayEl.textContent = formatMoney(weeklyPay * 52 / 12);
-  annualPayEl.textContent = formatMoney(weeklyPay * 52);
-
-  updateBreakdown(selectedDays);
-  saveState();
-}
-
-function resetPlanner() {
-  daysGrid.querySelectorAll("input").forEach(input => {
-    input.checked = false;
-  });
-
-  hourlyRateInput.value = "14";
-  update();
-}
-
-createDayControls();
-loadState();
-hourlyRateInput.addEventListener("input", update);
-resetBtn.addEventListener("click", resetPlanner);
-update();
+build();load();rate.addEventListener("input",update);document.getElementById("resetBtn").addEventListener("click",()=>{daysList.querySelectorAll("input").forEach(x=>x.checked=false);rate.value=14;update()});update();
