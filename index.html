@@ -1,1 +1,93 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>4-Week Shift Planner</title><link rel="stylesheet" href="style.css"></head><body><main><header><div><small>WORK & PAY PLANNER</small><h1>4-Week Shift Planner</h1><p>Plan four separate weeks, linked to calendar dates, and estimate your take-home pay.</p></div><button id="reset">Reset</button></header><section class="card controls"><label>Week 1 starting date<input id="start" type="date"><em>Weeks are generated Monday–Sunday.</em></label><label>Hourly rate (£)<input id="rate" type="number" value="14" min="0" step=".01"></label><label>Tax code<input id="tax" value="1257L"></label><label>NI category<select id="ni"><option value="A">A — standard</option><option value="B">B — reduced rate</option><option value="C">C — no employee NI</option><option value="J">J — deferred NI</option></select></label></section><section id="weeks"></section><section class="card summary"><h2>4-Week Pay Summary</h2><div class="grid"><div>Total shifts<b id="shifts">0</b></div><div>Total hours<b id="hours">0</b></div><div>Gross pay<b id="gross">£0.00</b></div><div>Income tax<b id="it">£0.00</b></div><div>National Insurance<b id="niout">£0.00</b></div><div class="net">Estimated take-home<b id="net">£0.00</b></div><div>Effective deductions<b id="deduct">0.00%</b></div><div>Average weekly net<b id="avg">£0.00</b></div></div><p class="note"><strong>Tax estimate:</strong> 2026/27 England, Wales and Northern Ireland rates. The four-week earnings are annualised to estimate PAYE and NI, so your actual payslip may differ.</p><h3>Weekly breakdown</h3><div id="breakdown"></div></section></main><script src="script.js"></script></body></html>
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>4-Week Shift Planner</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="app">
+  <header class="hero">
+    <div>
+      <div class="badge">WORK & PAY PLANNER</div>
+      <h1>4-Week Shift Planner</h1>
+      <p>Plan your shifts, see your hours and estimate your take-home pay.</p>
+    </div>
+    <button id="reset" class="reset-btn">↻ Reset</button>
+  </header>
+
+  <section class="card setup">
+    <div class="section-title">
+      <div>
+        <h2>1. Set up your rota</h2>
+        <p>Choose your Week 1 start date and pay details.</p>
+      </div>
+    </div>
+    <div class="controls">
+      <label>
+        <span>Week 1 starts</span>
+        <input id="start" type="date">
+        <small>Weeks run Monday to Sunday.</small>
+      </label>
+      <label>
+        <span>Hourly rate</span>
+        <div class="input-prefix"><b>£</b><input id="rate" type="number" value="14" min="0" step=".01"></div>
+      </label>
+      <label>
+        <span>Tax code</span>
+        <input id="tax" value="1257L" maxlength="12">
+      </label>
+      <label>
+        <span>NI category</span>
+        <select id="ni">
+          <option value="A">A — Standard</option>
+          <option value="B">B — Reduced rate</option>
+          <option value="C">C — No employee NI</option>
+          <option value="J">J — Deferred NI</option>
+        </select>
+      </label>
+    </div>
+  </section>
+
+  <section class="card instructions">
+    <div class="tip-icon">✓</div>
+    <div><strong>2. Select your shifts</strong><span>Tap a Day or Night shift to add it. Tap again to remove it.</span></div>
+    <div class="legend"><span class="dot day-dot"></span> Day <span class="dot night-dot"></span> Night</div>
+  </section>
+
+  <nav class="week-tabs" id="tabs" aria-label="Weeks"></nav>
+  <section id="weeks"></section>
+
+  <section class="card summary">
+    <div class="summary-heading">
+      <div><h2>Your pay estimate</h2><p>Based on the shifts selected above.</p></div>
+      <div class="selected-pill"><span id="shifts">0</span> shifts · <span id="hours">0</span> hours</div>
+    </div>
+
+    <div class="money-card">
+      <span>Estimated take-home</span>
+      <strong id="net">£0.00</strong>
+      <small>After estimated tax & National Insurance</small>
+    </div>
+
+    <div class="pay-grid">
+      <div><span>Gross pay</span><b id="gross">£0.00</b></div>
+      <div><span>Income tax</span><b id="it">£0.00</b></div>
+      <div><span>National Insurance</span><b id="niout">£0.00</b></div>
+      <div><span>Total deductions</span><b id="deduct">0.00%</b></div>
+    </div>
+
+    <div class="average"><span>Average weekly take-home</span><strong id="avg">£0.00</strong></div>
+
+    <h3>Weekly breakdown</h3>
+    <div id="breakdown"></div>
+
+    <div class="notice">
+      <strong>Tax estimate:</strong> Uses 2026/27 England, Wales and Northern Ireland rates. The four-week earnings are annualised to estimate PAYE and NI. Your actual payslip can differ because of pay frequency, cumulative tax codes, pension, student loan, other jobs and other deductions.
+    </div>
+  </section>
+</div>
+<script src="script.js"></script>
+</body>
+</html>
